@@ -33,7 +33,7 @@ public class AppStarter {
 
     static Logger log = LoggerFactory.getLogger("app");
 
-    static String key = "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";
+    static String key = "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";
 
     static String bot_user = "U057R18C27K";
 
