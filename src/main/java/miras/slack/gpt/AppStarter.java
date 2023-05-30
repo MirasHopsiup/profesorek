@@ -8,6 +8,7 @@ import static com.slack.api.model.block.composition.BlockCompositions.markdownTe
 import static com.slack.api.model.view.Views.view;
 
 import com.slack.api.bolt.App;
+import com.slack.api.bolt.AppConfig;
 import com.slack.api.bolt.jetty.SlackAppServer;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
@@ -32,7 +33,7 @@ public class AppStarter {
 
     static Logger log = LoggerFactory.getLogger("app");
 
-    static String key = "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";
+    static String key = "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";
 
     static String bot_user = "U057R18C27K";
 
