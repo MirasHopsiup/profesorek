@@ -167,6 +167,12 @@ public class AppStarter {
                         .threadTs(payload.getEvent().getTs())
                         .text(response)
                     );
+                }, t -> {
+                    log.info("error, {}", t.getMessage());
+                    ctx.client().chatPostMessage(r -> r
+                        .channel(payload.getEvent().getChannel())
+                        .threadTs(payload.getEvent().getTs())
+                        .text("sorry error poszedł"));
                 });
 
             log.info("ack");
