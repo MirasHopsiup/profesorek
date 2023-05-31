@@ -26,6 +26,7 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -243,10 +244,10 @@ public class AppStarter {
         });
 
         //var server = new SlackAppServer(app);
-        SlackAppServer server = new SlackAppServer(Map.of(
+        SlackAppServer server = new SlackAppServer(new HashMap<>(Map.of(
             "/slack/events", app,
             "/slack/oauth", oauthApp
-        ));
+        )));
         server.start();
 
 
