@@ -54,6 +54,7 @@ public class AppStarter {
         var app = new App();
 
         var service = new OpenAiService(key);
+        var gptResponse = new GptResponse(service);
 
 
        /* config.setSingleTeamBotToken(System.getenv("SLACK_BOT_TOKEN"));
@@ -149,17 +150,7 @@ public class AppStarter {
                 .model("gpt-3.5-turbo")
                 .build();
 
-            service.streamChatCompletion(chatRequest)
-                .subscribeOn(Schedulers.computation())
-                .map(response -> Optional.ofNullable(
-                    response.getChoices().get(0).getMessage().getContent()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .doOnNext(response -> log.info("... : {}", response))
-                .reduce(
-                    new StringBuffer(),
-                    StringBuffer::append)
-                .map(StringBuffer::toString)
+            gptResponse.getResponse(chatRequest)
                 .subscribe(response -> {
                     log.info("response: {}", response);
 
@@ -201,6 +192,16 @@ public class AppStarter {
             var userInfo =
                 ctx.client().usersInfo(r -> r.user(payload.getEvent().getUser()));
             log.info("user details: {}", userInfo);
+
+            var chatRequest = new Welcome().prepare(userInfo.getUser().getRealName());
+            gptResponse.getResponse(chatRequest)
+                .subscribe(response -> {
+                        log.info("response: {}", response);
+                        ctx.client().chatPostMessage(r -> r
+                            .channel(payload.getEvent().getChannel())
+                            .text(response)
+                        );
+                    });
 
             ctx.client().chatPostMessage(r -> r
                 .channel(payload.getEvent().getChannel())
