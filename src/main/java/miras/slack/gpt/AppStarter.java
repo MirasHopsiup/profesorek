@@ -12,6 +12,8 @@ import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
 import com.slack.api.bolt.jetty.SlackAppServer;
 import com.slack.api.bolt.response.Response;
+import com.slack.api.bolt.service.OAuthStateService;
+import com.slack.api.bolt.service.builtin.FileOAuthStateService;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
 import com.slack.api.model.event.MessageBotEvent;
@@ -225,7 +227,8 @@ public class AppStarter {
 
         // ---- oauth ----
         App oauthApp = new App().asOAuthApp(true);
-
+        log.info("config {}", oauthApp.config());
+        oauthApp.service(new FileOAuthStateService(oauthApp.config()));
 
         oauthApp.endpoint("GET", "/slack/oauth/completion", (req, ctx) -> {
             return Response.builder()
