@@ -200,7 +200,7 @@ public class AppStarter {
 
             ctx.client().chatPostMessage(r -> r
                 .channel(payload.getEvent().getChannel())
-                .text("Another one that can't code....., meh. Welcome or something. :robot-face:")
+                .text("Another one that can't code....., meh. Welcome or something. :robot_face:")
             );
 
             return ctx.ack();
