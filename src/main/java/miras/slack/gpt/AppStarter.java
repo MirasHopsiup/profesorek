@@ -14,6 +14,7 @@ import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
 import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageChangedEvent;
+import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.slack.api.model.event.ReactionAddedEvent;
@@ -179,11 +180,6 @@ public class AppStarter {
             return ctx.ack();
         });
 
-        app.event(MessageBotEvent.class, (payload, ctx) -> {
-            log.info("message bot event: {}", payload.getEvent().getText());
-            return ctx.ack();
-        });
-
         app.event(MessageChangedEvent.class, (payload, ctx) -> {
             log.info("message changed event: {}", payload.getEvent().getMessage().getText());
             return ctx.ack();
@@ -199,8 +195,14 @@ public class AppStarter {
             return ctx.ack();
         });
 
-        app.event(MemberJoinedChannelEvent.class, (payload, ctx) -> {
-            log.info("member joined channel event: {}", payload.getEvent().getUser());
+        app.event(MessageChannelJoinEvent.class, (payload, ctx) -> {
+            log.info("joined channel event: {}", payload.getEvent().getUser());
+
+            ctx.client().chatPostMessage(r -> r
+                .channel(payload.getEvent().getChannel())
+                .text("Another one that can't code....., meh. Welcome or something. :robot-face:")
+            );
+
             return ctx.ack();
         });
 
