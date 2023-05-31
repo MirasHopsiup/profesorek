@@ -146,7 +146,7 @@ public class AppStarter {
 
             var chatRequest = ChatCompletionRequest.builder()
                 .messages(messages)
-                .temperature(0.9)
+                .temperature(0.2)
                 .model("gpt-3.5-turbo")
                 .build();
 
