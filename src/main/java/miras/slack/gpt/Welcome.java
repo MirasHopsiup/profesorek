@@ -23,11 +23,10 @@ public class Welcome {
         return
         ChatCompletionRequest.builder()
             .messages(messages)
-            .temperature(0.5)
+            .temperature(0.8)
             .model("gpt-3.5-turbo")
             .build();
     }
-
 
     @RequiredArgsConstructor
     @Getter
@@ -36,6 +35,7 @@ public class Welcome {
         HAIKU("haiku"),
         DIAM("diamante poem"),
         COU("couplet"),
+        CIN("cinquain"),
         TAM("tanka poem");
         final String type;
     }

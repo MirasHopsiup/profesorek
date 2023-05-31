@@ -6,10 +6,12 @@ import static com.slack.api.model.block.Blocks.divider;
 import static com.slack.api.model.block.Blocks.section;
 import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 import static com.slack.api.model.view.Views.view;
+import static java.util.Map.entry;
 
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
 import com.slack.api.bolt.jetty.SlackAppServer;
+import com.slack.api.bolt.response.Response;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import com.slack.api.model.event.MemberJoinedChannelEvent;
 import com.slack.api.model.event.MessageBotEvent;
@@ -25,6 +27,7 @@ import com.theokanning.openai.service.OpenAiService;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -219,8 +222,35 @@ public class AppStarter {
 
         log.info("Starting app...");
 
-        var server = new SlackAppServer(app);
+        // ---- oauth ----
+        App oauthApp = new App().asOAuthApp(true);
+
+
+        oauthApp.endpoint("GET", "/slack/oauth/completion", (req, ctx) -> {
+            return Response.builder()
+                .statusCode(200)
+                .contentType("text/html")
+                .body("ok")
+                .build();
+        });
+
+        oauthApp.endpoint("GET", "/slack/oauth/cancellation", (req, ctx) -> {
+            return Response.builder()
+                .statusCode(200)
+                .contentType("text/html")
+                .body("ok")
+                .build();
+        });
+
+        //var server = new SlackAppServer(app);
+        SlackAppServer server = new SlackAppServer(Map.of(
+            "/slack/events", app,
+            "/slack/oauth", oauthApp
+        ));
         server.start();
+
+
+
 
     }
 
