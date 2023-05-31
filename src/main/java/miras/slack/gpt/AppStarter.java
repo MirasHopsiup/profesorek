@@ -198,6 +198,10 @@ public class AppStarter {
         app.event(MessageChannelJoinEvent.class, (payload, ctx) -> {
             log.info("joined channel event: {}", payload.getEvent().getUser());
 
+            var userInfo =
+                ctx.client().usersInfo(r -> r.user(payload.getEvent().getUser()));
+            log.info("user details: {}", userInfo);
+
             ctx.client().chatPostMessage(r -> r
                 .channel(payload.getEvent().getChannel())
                 .text("Another one that can't code....., meh. Welcome or something. :robot_face:")
@@ -209,7 +213,6 @@ public class AppStarter {
         app.blockAction("button_1", (req, ctx) -> {
             log.info("button clicked: {}", req.getPayload().getActions());
             //ctx.respond("You clicked a button!");
-
             return ctx.ack();
         });
 
