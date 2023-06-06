@@ -53,6 +53,23 @@ public class AppStarter {
         config.setSigningSecret(System.getenv("SLACK_SIGNING_SECRET"));
         */
 
+        app.command("/poem", (payload, ctx) -> {
+            var text = payload.getPayload().getText();
+            var chatRequest = new WelcomePrompt().createPoemPrompt(text);
+
+            gptResponse.getResponseWithUpdates(chatRequest, payload, ctx)
+                .subscribe(response -> {
+                    log.info("response: {}", response);
+                }, t -> {
+                    log.info("error, {}", t.getMessage());
+                    ctx.client().chatPostMessage(r -> r
+                        .channel(ctx.getChannelId())
+                        .text("sorry error poszedł"));
+                });
+
+            return ctx.ack();
+        });
+
         app.event(AppHomeOpenedEvent.class, (payload, ctx) -> {
             var appHomeView = view(view -> view
                 .type("home")

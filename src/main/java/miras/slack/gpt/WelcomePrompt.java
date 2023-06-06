@@ -42,6 +42,22 @@ public class WelcomePrompt {
                 .build();
     }
 
+    ChatCompletionRequest createPoemPrompt(String topic) {
+
+        var poemType = PoemType.values()[r.nextInt(PoemType.values().length)];
+
+        var messages = List.of(
+            new ChatMessage(ChatMessageRole.USER.value(),
+                "Please write a " + poemType.getType() + " about " + topic)
+        );
+        return
+            ChatCompletionRequest.builder()
+                .messages(messages)
+                .temperature(0.8)
+                .model("gpt-3.5-turbo")
+                .build();
+    }
+
     @RequiredArgsConstructor
     @Getter
     enum PoemType {
