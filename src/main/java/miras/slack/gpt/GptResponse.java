@@ -58,7 +58,7 @@ public class GptResponse {
                         .channel(channelId)
                         .text(chunk));
 
-                    messageId.set(postResponse.getMessage().getTs());
+                    messageId.set(postResponse.getTs());
                     lastResponse.set(chunk);
                 }
                 else {
