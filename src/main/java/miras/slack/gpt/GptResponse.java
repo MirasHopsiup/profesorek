@@ -55,6 +55,7 @@ public class GptResponse {
                     var postResponse = ctx.client().chatPostMessage(r -> r
                         .channel(payload.getEvent().getChannel())
                         .threadTs(payload.getEvent().getTs())
+                        .mrkdwn(true)
                         .text(chunk));
 
                     messageId.set(postResponse.getTs());
