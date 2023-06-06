@@ -1,17 +1,15 @@
 package miras.slack.gpt;
 
-import com.slack.api.methods.MethodsClient;
-import com.slack.api.util.http.SlackHttpClient;
+import com.slack.api.app_backend.events.payload.EventsApiPayload;
+import com.slack.api.bolt.context.builtin.EventContext;
+import com.slack.api.model.event.MessageEvent;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.service.OpenAiService;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +33,8 @@ public class GptResponse {
             .map(StringBuffer::toString);
     }
 
-    Single<String> getResponseWithUpdates(ChatCompletionRequest chatRequest, MethodsClient client, String channelId) {
+    Single<String> getResponseWithUpdates(ChatCompletionRequest chatRequest, EventsApiPayload<MessageEvent> payload,
+        EventContext ctx) {
 
         AtomicReference<String> messageId = new AtomicReference<>("");
         AtomicReference<String> lastResponse = new AtomicReference<>("");
@@ -48,23 +47,24 @@ public class GptResponse {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .doOnNext(response -> log.info("... : {}", response))
-            .buffer(1, TimeUnit.SECONDS)
+            .buffer(2, TimeUnit.SECONDS)
             .map(respChunks -> {
 
                 var chunk = String.join(" ", respChunks);
 
                 if (StringUtils.isBlank(messageId.get())) {
-                    var postResponse = client.chatPostMessage(r -> r
-                        .channel(channelId)
+                    var postResponse = ctx.client().chatPostMessage(r -> r
+                        .channel(payload.getEvent().getChannel())
+                        .threadTs(payload.getEvent().getTs())
                         .text(chunk));
 
                     messageId.set(postResponse.getTs());
                     lastResponse.set(chunk);
                 }
                 else {
-                    var updatedMessage = lastResponse.get() + " " + chunk;
-                    client.chatUpdate(r -> r
-                        .channel(channelId)
+                    var updatedMessage = lastResponse.get() + chunk;
+                    ctx.client().chatUpdate(r -> r
+                        .channel(payload.getEvent().getChannel())
                         .ts(messageId.get())
                         .text(updatedMessage));
                     lastResponse.set(updatedMessage);

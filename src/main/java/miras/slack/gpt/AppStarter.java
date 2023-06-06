@@ -156,7 +156,7 @@ public class AppStarter {
                 .model("gpt-3.5-turbo")
                 .build();
 
-            gptResponse.getResponseWithUpdates(chatRequest, ctx.client(), ctx.getChannelId())
+            gptResponse.getResponseWithUpdates(chatRequest, payload, ctx)
                 .subscribe(response -> {
                     log.info("response: {}", response);
 
