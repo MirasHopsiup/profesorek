@@ -46,11 +46,10 @@ public class GptResponse {
                 response.getChoices().get(0).getMessage().getContent()))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .doOnNext(response -> log.info("... : {}", response))
             .buffer(2, TimeUnit.SECONDS)
             .map(respChunks -> {
-
-                var chunk = String.join(" ", respChunks);
+                var chunk = StringUtils.trim(String.join("", respChunks));
+                log.info("got chunk: {}", chunk);
 
                 if (StringUtils.isBlank(messageId.get())) {
                     var postResponse = ctx.client().chatPostMessage(r -> r
@@ -62,7 +61,7 @@ public class GptResponse {
                     lastResponse.set(chunk);
                 }
                 else {
-                    var updatedMessage = lastResponse.get() + chunk;
+                    var updatedMessage = lastResponse.get() + " " + chunk;
                     ctx.client().chatUpdate(r -> r
                         .channel(payload.getEvent().getChannel())
                         .ts(messageId.get())
