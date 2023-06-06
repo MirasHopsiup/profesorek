@@ -46,10 +46,14 @@ public class GptResponse {
                 response.getChoices().get(0).getMessage().getContent()))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .buffer(2, TimeUnit.SECONDS)
+            .buffer(1, TimeUnit.SECONDS)
             .map(respChunks -> {
                 var chunk = String.join("", respChunks);
                 log.info("got chunk: {}", chunk);
+
+                if (StringUtils.isBlank(chunk)) {
+                    return "";
+                }
 
                 if (StringUtils.isBlank(messageId.get())) {
                     var postResponse = ctx.client().chatPostMessage(r -> r
