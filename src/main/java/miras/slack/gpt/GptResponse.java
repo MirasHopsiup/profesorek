@@ -48,7 +48,7 @@ public class GptResponse {
             .map(Optional::get)
             .buffer(2, TimeUnit.SECONDS)
             .map(respChunks -> {
-                var chunk = StringUtils.trim(String.join("", respChunks));
+                var chunk = String.join("", respChunks);
                 log.info("got chunk: {}", chunk);
 
                 if (StringUtils.isBlank(messageId.get())) {
@@ -61,7 +61,7 @@ public class GptResponse {
                     lastResponse.set(chunk);
                 }
                 else {
-                    var updatedMessage = lastResponse.get() + " " + chunk;
+                    var updatedMessage = lastResponse.get() + chunk;
                     ctx.client().chatUpdate(r -> r
                         .channel(payload.getEvent().getChannel())
                         .ts(messageId.get())
