@@ -6,34 +6,22 @@ import static com.slack.api.model.block.Blocks.divider;
 import static com.slack.api.model.block.Blocks.section;
 import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 import static com.slack.api.model.view.Views.view;
-import static java.util.Map.entry;
+import static miras.slack.gpt.BotConstants.PROGRAMMING_CHANNEL_ID;
 
 import com.slack.api.bolt.App;
-import com.slack.api.bolt.AppConfig;
 import com.slack.api.bolt.jetty.SlackAppServer;
 import com.slack.api.bolt.response.Response;
-import com.slack.api.bolt.service.OAuthStateService;
 import com.slack.api.bolt.service.builtin.FileOAuthStateService;
 import com.slack.api.model.event.AppHomeOpenedEvent;
-import com.slack.api.model.event.MemberJoinedChannelEvent;
-import com.slack.api.model.event.MessageBotEvent;
 import com.slack.api.model.event.MessageChangedEvent;
 import com.slack.api.model.event.MessageChannelJoinEvent;
 import com.slack.api.model.event.MessageDeletedEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.slack.api.model.event.ReactionAddedEvent;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
-import io.reactivex.schedulers.Schedulers;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +29,7 @@ public class AppStarter {
 
     static Logger log = LoggerFactory.getLogger("app");
 
-    static String key = System.getenv("OPENAI_KEY"); //"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";
-
-    static String bot_user = "U057R18C27K";
-
+    static String key = System.getenv("OPENAI_KEY");
 
     public static void main(String[] args)throws Exception  {
 
@@ -101,17 +86,13 @@ public class AppStarter {
             ChatCompletionRequest chatRequest;
 
             switch (payload.getEvent().getChannel()) {
-                case "X": {
+                case PROGRAMMING_CHANNEL_ID: {
                     var programmingPrompt = new ProgramminPrompt(payload, ctx);
                     chatRequest = programmingPrompt.createProgrammingPrompt();
-                }
-                case "Y": {
-                    var philosophyPrompt = new PhilosophyPrompt(payload, ctx);
-                    chatRequest = philosophyPrompt.createPhilosophicPrompt();
                 }
                 default: {
-                    var programmingPrompt = new ProgramminPrompt(payload, ctx);
-                    chatRequest = programmingPrompt.createProgrammingPrompt();
+                    var philosophyPrompt = new PhilosophyPrompt(payload, ctx);
+                    chatRequest = philosophyPrompt.createPhilosophicPrompt();
                 }
             }
 
@@ -160,7 +141,17 @@ public class AppStarter {
                 ctx.client().usersInfo(r -> r.user(payload.getEvent().getUser()));
             log.info("user details: {}", userInfo);
 
-            var chatRequest = new Welcome().prepare(userInfo.getUser().getRealName());
+            ChatCompletionRequest chatRequest;
+            var welcomePrompt = new WelcomePrompt();
+            switch (payload.getEvent().getChannel()) {
+                case PROGRAMMING_CHANNEL_ID: {
+                    chatRequest = welcomePrompt.createWelcomeProgrammerPrompt(userInfo.getUser().getRealName());
+                }
+                default: {
+                    chatRequest = welcomePrompt.createPhilosophyClientPrompt(userInfo.getUser().getRealName());
+                }
+            }
+
             gptResponse.getResponse(chatRequest)
                 .subscribe(response -> {
                         log.info("response: {}", response);

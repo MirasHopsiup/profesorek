@@ -8,11 +8,11 @@ import java.util.Random;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-public class Welcome {
+public class WelcomePrompt {
 
     Random r = new Random();
 
-    ChatCompletionRequest prepare(String userName) {
+    ChatCompletionRequest createWelcomeProgrammerPrompt(String userName) {
 
         var poemType = PoemType.values()[r.nextInt(PoemType.values().length)];
 
@@ -26,6 +26,20 @@ public class Welcome {
             .temperature(0.8)
             .model("gpt-3.5-turbo")
             .build();
+    }
+
+    ChatCompletionRequest createPhilosophyClientPrompt(String userName) {
+        var messages = List.of(
+            new ChatMessage(ChatMessageRole.USER.value(),
+                "You are professor of philosophy. You always answer with the question. You use complex, sophisticated language. you are interested in sense and motivation." +
+                "A stranger named " + userName + " enters your office. Welcome him/her.")
+        );
+        return
+            ChatCompletionRequest.builder()
+                .messages(messages)
+                .temperature(0.8)
+                .model("gpt-3.5-turbo")
+                .build();
     }
 
     @RequiredArgsConstructor
