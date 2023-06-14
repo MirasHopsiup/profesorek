@@ -49,6 +49,9 @@ public class GptResponse {
                 response.getChoices().get(0).getMessage().getContent()))
             .filter(Optional::isPresent)
             .map(Optional::get)
+            .retry(3)
+
+
             .buffer(1, TimeUnit.SECONDS)
             .map(respChunks -> {
                 var chunk = String.join("", respChunks);
@@ -106,8 +109,6 @@ public class GptResponse {
 
                     if (StringUtils.isBlank(messageId.get())) {
                         var postResponse = ctx.client().chatPostMessage(r -> r
-                            .channel(ctx.getChannelId())
-                            .mrkdwn(true)
                             .text(chunk));
 
                         messageId.set(postResponse.getTs());

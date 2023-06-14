@@ -32,8 +32,6 @@ public class AppStarter {
     static String key = System.getenv("OPENAI_KEY");
 
     public static void main(String[] args)throws Exception  {
-
-
 /*
         var config = new AppConfig();
         config.setClientId("766129040951.5229037240359");
@@ -44,10 +42,8 @@ public class AppStarter {
 */
 
         var app = new App();
-
         var service = new OpenAiService(key);
         var gptResponse = new GptResponse(service);
-
 
        /* config.setSingleTeamBotToken(System.getenv("SLACK_BOT_TOKEN"));
         config.setSigningSecret(System.getenv("SLACK_SIGNING_SECRET"));
@@ -57,6 +53,7 @@ public class AppStarter {
             var text = payload.getPayload().getText();
             var chatRequest = new WelcomePrompt().createPoemPrompt(text);
 
+            ctx.respond(r -> r.text(">Poem about " + text));
             gptResponse.getResponseWithUpdates(chatRequest, payload, ctx)
                 .subscribe(response -> {
                     log.info("response: {}", response);
@@ -106,6 +103,7 @@ public class AppStarter {
                 case PROGRAMMING_CHANNEL_ID: {
                     var programmingPrompt = new ProgramminPrompt(payload, ctx);
                     chatRequest = programmingPrompt.createProgrammingPrompt();
+                    break;
                 }
                 default: {
                     var philosophyPrompt = new PhilosophyPrompt(payload, ctx);
