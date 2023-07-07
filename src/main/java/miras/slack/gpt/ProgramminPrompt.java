@@ -56,7 +56,7 @@ public class ProgramminPrompt {
         var chatRequest = ChatCompletionRequest.builder()
             .messages(messages)
             .temperature(0.2)
-            .model("gpt-3.5-turbo")
+            .model("gpt-4")
             .build();
 
         return chatRequest;

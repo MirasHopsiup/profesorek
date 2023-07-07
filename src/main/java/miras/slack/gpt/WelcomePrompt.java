@@ -24,7 +24,7 @@ public class WelcomePrompt {
         ChatCompletionRequest.builder()
             .messages(messages)
             .temperature(0.8)
-            .model("gpt-3.5-turbo")
+            .model("gpt-4")
             .build();
     }
 
@@ -54,7 +54,7 @@ public class WelcomePrompt {
             ChatCompletionRequest.builder()
                 .messages(messages)
                 .temperature(0.8)
-                .model("gpt-3.5-turbo")
+                .model("gpt-4")
                 .build();
     }
 
