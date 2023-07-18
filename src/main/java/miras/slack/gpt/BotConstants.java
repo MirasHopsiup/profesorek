@@ -7,4 +7,6 @@ public interface BotConstants {
     String PROGRAMMING_CHANNEL_ID = "C057DKB8UF4";
     String PHILOSOPHY_CHANNEL_ID = "C05BJ82C9RP";
 
+    String MUSIC_CHANNEL_ID = "C05HM2BJ61Y";
+
 }

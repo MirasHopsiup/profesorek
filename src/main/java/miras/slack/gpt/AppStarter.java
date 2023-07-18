@@ -6,6 +6,8 @@ import static com.slack.api.model.block.Blocks.divider;
 import static com.slack.api.model.block.Blocks.section;
 import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 import static com.slack.api.model.view.Views.view;
+import static miras.slack.gpt.BotConstants.MUSIC_CHANNEL_ID;
+import static miras.slack.gpt.BotConstants.PHILOSOPHY_CHANNEL_ID;
 import static miras.slack.gpt.BotConstants.PROGRAMMING_CHANNEL_ID;
 
 import com.slack.api.bolt.App;
@@ -106,9 +108,19 @@ public class AppStarter {
                     chatRequest = programmingPrompt.createProgrammingPrompt();
                     break;
                 }
-                default: {
+                case MUSIC_CHANNEL_ID: {
+                    var musicPrompt = new MusicPrompt(payload, ctx);
+                    chatRequest = musicPrompt.createMusicSuggestionPrompt();
+                    break;
+                }
+                case PHILOSOPHY_CHANNEL_ID: {
                     var philosophyPrompt = new PhilosophyPrompt(payload, ctx);
                     chatRequest = philosophyPrompt.createPhilosophicPrompt();
+                }
+
+                default: {
+                    var vanillaPrompt = new VanillaPrompt(payload, ctx);
+                    chatRequest = vanillaPrompt.createPrompt();
                 }
             }
 

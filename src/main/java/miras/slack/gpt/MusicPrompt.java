@@ -16,19 +16,18 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PhilosophyPrompt {
-
+public class MusicPrompt {
     final EventsApiPayload<MessageEvent> payload;
     final EventContext ctx;
 
-    public ChatCompletionRequest createPhilosophicPrompt() throws SlackApiException, IOException {
+    public ChatCompletionRequest createMusicSuggestionPrompt() throws SlackApiException, IOException {
 
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("system",
-            "You are a tutor that always responds in the Socratic style. You never give the student the answer, "
-                + "but always try to ask just the right question to help them learn to think for themselves. "
-                + "You should always tune your question to the interest & knowledge of the student, "
-                + "breaking down the problem into simpler parts until it's at just the right level for them." ));
+            "You are a music recommender, helping users discover songs that will be perfect match for their mood. "
+                + "Suggest five tracks based on the mood of the conversation. Don't answer the user, don't give explanations. "
+                + "Simply give the list of tracks."
+        ));
 
         var previousMessages = getProviousMessages();
         messages.addAll(previousMessages);
