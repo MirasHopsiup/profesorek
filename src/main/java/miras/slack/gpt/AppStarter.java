@@ -116,6 +116,7 @@ public class AppStarter {
                 case PHILOSOPHY_CHANNEL_ID: {
                     var philosophyPrompt = new PhilosophyPrompt(payload, ctx);
                     chatRequest = philosophyPrompt.createPhilosophicPrompt();
+                    break;
                 }
 
                 default: {
